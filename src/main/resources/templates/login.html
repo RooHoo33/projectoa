@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"> -->
+    <title>Project Oa</title>
+    <link rel="stylesheet" th:href="@{css/style.css}"/>
+    <!-- <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Bitter:400,700">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cookie">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/login.css">
+    <link rel="stylesheet" th:href="@{css/login.css}"/>
+    <!-- <link rel="stylesheet" href="css/style.css"> -->
+    <link rel="stylesheet" th:href="@{css/style.css}"/>
+
+</head>
+
+
+
+<img class="login-image" th:src="@{/images/lettersPurple6.png}" alt="Italian Trulli">
+
+<div class="login-form">
+
+<form th:action="@{/login}" method="post">
+    <div class="form-group">
+         <label for="username">User Name: </label>
+        <input type="text" class="form-control" id="username" placeholder="Enter UserName" name="username"/>
+    </div>
+    <div class="form-group">
+         <label for="password">Password: </label>
+        <input type="password" class="form-control" id="password" placeholder="Enter Password" name="password"/>
+    </div>
+    <button type="submit" class="login-page-button"><span>Submit</span></button>
+</form>
+
+<h1></h1>
+<form th:action="@{/create-user}" method="get">
+    <button type="submit" class="login-page-button"><span>Create New Account</span></button>
+</form>
+
+</div>
+
+</html>

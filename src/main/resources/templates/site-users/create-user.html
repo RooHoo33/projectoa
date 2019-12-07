@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head lang="en">
+
+    <title>Create New User</title>
+
+    <link rel="stylesheet" th:href="@{css/style.css}"/>
+
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+<div class="user-form">
+    <div id="meta-info-section">
+        <form th:object="${siteUser}" th:action="@{/create-user}" method="post">
+            <h1>Login</h1>
+
+            First Name<input class="meta" type="text" th:field="*{first_name}"><br>
+            Last Name<input class="meta" type="text" th:field="*{last_name}"><br>
+            Kappa Simga- Leave zero if Associate Member<input class="meta" type="number" th:field="*{kappa_sigma}"><br>
+            Big<input class="meta" type="number" th:field="*{big}"><br>
+            User Name<input class="meta" type="text" th:field="*{user_name}"><br>
+            Password<input class="meta" type="password" th:field="*{password}"><br>
+            <button class="meta" type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
