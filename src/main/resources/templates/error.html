@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Error</title>
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Project Oa</title>
@@ -13,8 +14,26 @@
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <link rel="stylesheet" th:href="@{/css/error.css}"/>
+
+
 </head>
 <body>
-You have Hit and error. Please Try Again
+You have Hit an error.
+<br>
+<br>
+<!--/*@thymesVar id="errorMessages" type="kotlin"*/-->
+<div th:if="${errorMessages}">
+<th:block th:each="errorMessage: ${errorMessages}">
+
+    <div class="error">
+        <div class="error-text">
+            <strong >Danger! </strong><span th:text="${errorMessage.error}"></span>
+        </div>
+
+    </div>
+    <br>
+</th:block>
+</div>
 </body>
 </html>

@@ -23,8 +23,27 @@
     <link rel="stylesheet" th:href="@{/css/login.css}"/>
 
     <link rel="stylesheet" th:href="@{/css/chore-chart-form.css}"/>
+    <link rel="stylesheet" th:href="@{/css/error.css}"/>
+
 
 </head>
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+
+<div th:if="${errorMessages}">
+<th:block th:each="errorMessage: ${errorMessages}">
+
+    <div class="error">
+        <div class="error-text">
+            <strong >Danger! </strong><span th:text="${errorMessage.error}"></span>
+        </div>
+
+    </div>
+    <br>
+</th:block>
+</div>
+
 
 <form th:object="${choresAndDays}" th:action="@{/chorechart/create-chore-chart-form/create}" method="post">
 
@@ -88,5 +107,9 @@
 
 
 </form>
+
+</body>
+
+
 
 </html>

@@ -5,6 +5,7 @@ import computer.roohoo.projectoa.choreChart.repositorysAndObjects.Week.ChoreAndW
 import computer.roohoo.projectoa.choreChart.repositorysAndObjects.Week.ChoreAndWeekRepository
 import computer.roohoo.projectoa.choreChart.repositorysAndObjects.Week.DayAndWeek
 import computer.roohoo.projectoa.choreChart.repositorysAndObjects.Week.DayAndWeekRepository
+import computer.roohoo.projectoa.error.ErrorMessage
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -92,37 +93,68 @@ public class ChoreChartController(private val userPreferenceRepository: UserPref
 
     @PostMapping("/chorechart/create-chore-chart-form/create")
     fun createChoreChartFormPost(choresAndDays: ChoresAndDays, model: Model): String {
-        if (choresAndDays.weekNumber.isEmpty() || choresAndDays.chores.isEmpty() ||choresAndDays.days.isEmpty()){
-            logger.warn("User did not select a day, chores, or a week: $choresAndDays")
-            //TODO add an error message and redirect to a page that includes a link to create-chore-chart-form
-            return "error"
 
+        val errors = mutableListOf<ErrorMessage>()
+        if (choresAndDays.weekNumber.isEmpty()) {
+            errors.add(ErrorMessage("Please Select a Week"))
         }
 
-        choresAndDays.chores.forEach {
-            logger.debug("Chore: $it")
-            choreAndWeekRepository.save(ChoreAndWeek(choreId = it.choreChoreId, week = choresAndDays.weekNumber))
+        if (choresAndDays.chores.isEmpty()) {
+            errors.add(ErrorMessage("Please Select At Least One Chore"))
         }
+
+        if (choresAndDays.days.isEmpty()) {
+            errors.add(ErrorMessage("Please Select At Least One Day"))
+        }
+
+        if (errors.isNotEmpty()) {
+            model.addAttribute("errorMessages", errors)
+
+            return createChoreChartForm(model)
+        }
+
+        choreAndWeekRepository.findByWeek(week = choresAndDays.weekNumber).forEach {
+            if (choresAndDays.chores.none { day -> day.choreChoreId == it.choreId }) {
+                logger.debug("Deleting chore: $it")
+                choreAndWeekRepository.delete(it)
+            }
+        }
+
+        for (it in choresAndDays.chores) {
+            val oldChores = choreAndWeekRepository.findByWeekAndChoreId(week = choresAndDays.weekNumber, choreId = it.choreChoreId)
+            if (oldChores.isEmpty()) {
+                logger.debug("New Save, Chore Id: ${it.choreChoreId} exists for the week of: ${choresAndDays.weekNumber}")
+                choreAndWeekRepository.save(ChoreAndWeek(week = choresAndDays.weekNumber, choreId = it.choreChoreId))
+            } else if (oldChores.size != 1) {
+                logger.error("Number of chores returned from a database call is more than one, $oldChores")
+
+            } else if (!oldChores.isEmpty()) {
+
+                logger.debug("Existing Chore, Day Id: ${it.choreChoreId} exists for the week of: ${choresAndDays.weekNumber}")
+
+            }
+        }
+
         dayAndWeekRepository.findByWeek(week = choresAndDays.weekNumber).forEach {
-            if (choresAndDays.days.none { day -> day.choreDayId == it.dayId }){
+            if (choresAndDays.days.none { day -> day.choreDayId == it.dayId }) {
                 logger.debug("Deleting day: $it")
                 dayAndWeekRepository.delete(it)
             }
         }
 
         for (it in choresAndDays.days) {
-                val oldDays = dayAndWeekRepository.findByWeekAndAndDayId(week = choresAndDays.weekNumber, dayId = it.choreDayId)
-                if (oldDays.isEmpty()) {
-                    logger.debug("New Save, Day Id: ${it.choreDayId} exists for the week of: ${choresAndDays.weekNumber}")
-                    dayAndWeekRepository.save(DayAndWeek(week = choresAndDays.weekNumber, dayId = it.choreDayId))
-                } else if (oldDays.size != 1) {
-                    logger.error("Number of days returned from a database call is more than one, $oldDays")
+            val oldDays = dayAndWeekRepository.findByWeekAndAndDayId(week = choresAndDays.weekNumber, dayId = it.choreDayId)
+            if (oldDays.isEmpty()) {
+                logger.debug("New Save, Day Id: ${it.choreDayId} exists for the week of: ${choresAndDays.weekNumber}")
+                dayAndWeekRepository.save(DayAndWeek(week = choresAndDays.weekNumber, dayId = it.choreDayId))
+            } else if (oldDays.size != 1) {
+                logger.error("Number of days returned from a database call is more than one, $oldDays")
 
-                } else if (!oldDays.isEmpty()) {
+            } else if (!oldDays.isEmpty()) {
 
-                        logger.debug("Existing day, Day Id: ${it.choreDayId} exists for the week of: ${choresAndDays.weekNumber}")
+                logger.debug("Existing day, Day Id: ${it.choreDayId} exists for the week of: ${choresAndDays.weekNumber}")
 
-                }
+            }
         }
 
         logger.debug("Week: " + choresAndDays.weekNumber)
