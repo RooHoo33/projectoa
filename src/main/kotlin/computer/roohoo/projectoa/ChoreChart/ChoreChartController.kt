@@ -3,6 +3,7 @@ package computer.roohoo.projectoa.choreChart
 import computer.roohoo.projectoa.choreChart.repositorysAndObjects.*
 import computer.roohoo.projectoa.choreChart.repositorysAndObjects.Week.ChoreAndWeek
 import computer.roohoo.projectoa.choreChart.repositorysAndObjects.Week.ChoreAndWeekRepository
+import computer.roohoo.projectoa.choreChart.repositorysAndObjects.Week.DayAndWeek
 import computer.roohoo.projectoa.choreChart.repositorysAndObjects.Week.DayAndWeekRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Controller
@@ -67,7 +68,7 @@ public class ChoreChartController(private val userPreferenceRepository: UserPref
 
     fun createDaysListString(day: MutableIterable<ChoreDay>): MutableList<String> {
         val list = mutableListOf<String>()
-        day.forEach{
+        day.forEach {
             list.add(it.day)
         }
         return list
@@ -75,37 +76,59 @@ public class ChoreChartController(private val userPreferenceRepository: UserPref
 
     fun createChoresListString(day: MutableIterable<ChoreChore>): MutableList<String> {
         val list = mutableListOf<String>()
-        day.forEach{
+        day.forEach {
             list.add(it.choreName)
         }
         return list
     }
 
-    fun createDaysAndBoolean(day:Iterable<Any>): MutableList<DayOrChoreAndBoolean> {
+    fun createDaysAndBoolean(day: Iterable<Any>): MutableList<DayOrChoreAndBoolean> {
         val list = mutableListOf<DayOrChoreAndBoolean>()
-        day.forEach{
+        day.forEach {
             list.add(DayOrChoreAndBoolean(it))
         }
         return list
     }
 
     @PostMapping("/chorechart/create-chore-chart-form/create")
-    fun createChoreChartFormPost(choresAndDays:ChoresAndDays, model: Model): String {
+    fun createChoreChartFormPost(choresAndDays: ChoresAndDays, model: Model): String {
+        if (choresAndDays.weekNumber.isEmpty() || choresAndDays.chores.isEmpty() ||choresAndDays.days.isEmpty()){
+            logger.warn("User did not select a day, chores, or a week: $choresAndDays")
+            //TODO add an error message and redirect to a page that includes a link to create-chore-chart-form
+            return "error"
 
-        choresAndDays.chores.forEach{
+        }
+
+        choresAndDays.chores.forEach {
             logger.debug("Chore: $it")
             choreAndWeekRepository.save(ChoreAndWeek(choreId = it.choreChoreId, week = choresAndDays.weekNumber))
         }
-        choresAndDays.days.forEach {
-            logger.debug("Days: $it")
+        dayAndWeekRepository.findByWeek(week = choresAndDays.weekNumber).forEach {
+            if (choresAndDays.days.none { day -> day.choreDayId == it.dayId }){
+                logger.debug("Deleting day: $it")
+                dayAndWeekRepository.delete(it)
+            }
+        }
+
+        for (it in choresAndDays.days) {
+                val oldDays = dayAndWeekRepository.findByWeekAndAndDayId(week = choresAndDays.weekNumber, dayId = it.choreDayId)
+                if (oldDays.isEmpty()) {
+                    logger.debug("New Save, Day Id: ${it.choreDayId} exists for the week of: ${choresAndDays.weekNumber}")
+                    dayAndWeekRepository.save(DayAndWeek(week = choresAndDays.weekNumber, dayId = it.choreDayId))
+                } else if (oldDays.size != 1) {
+                    logger.error("Number of days returned from a database call is more than one, $oldDays")
+
+                } else if (!oldDays.isEmpty()) {
+
+                        logger.debug("Existing day, Day Id: ${it.choreDayId} exists for the week of: ${choresAndDays.weekNumber}")
+
+                }
         }
 
         logger.debug("Week: " + choresAndDays.weekNumber)
 
-
-
-
         return "home"
 
     }
+
 }

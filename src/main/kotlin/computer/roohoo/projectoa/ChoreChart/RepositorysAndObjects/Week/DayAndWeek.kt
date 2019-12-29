@@ -13,7 +13,7 @@ data class DayAndWeek(
         val id: Int = 0,
 
         @NotNull
-        val day: Int = 0,
+        val dayId: Int = 0,
 
         @NotBlank
         val week: String = ""
