@@ -1,4 +1,4 @@
-package computer.roohoo.projectoa.User
+package computer.roohoo.projectoa.choreChart.repositorysAndObjects.Week
 
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -7,15 +7,14 @@ import javax.persistence.Id
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
-@Entity(name = "auth")
-data class UserAuth(
+@Entity(name = "day_and_week")
+data class DayAndWeek(
         @Id @GeneratedValue(strategy = GenerationType.AUTO)
-        val auth_key: Int = 0,
+        val id: Int = 0,
 
-        @get: NotBlank
-        val auth_type: String = "",
+        @NotNull
+        val day: Int = 0,
 
-        @get: NotNull
-        val userId: Int = 0
-
-        )
+        @NotBlank
+        val week: String = ""
+)

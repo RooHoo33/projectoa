@@ -1,4 +1,4 @@
-package computer.roohoo.projectoa.User
+package computer.roohoo.projectoa.user
 
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,7 +22,7 @@ class UserAuthDatabaseDetails : UserDetailsService{
 
     @Throws(UsernameNotFoundException::class)
     override fun loadUserByUsername(username: String): UserDetails {
-        val user = repository?.findByUserName(username) ?: throw UsernameNotFoundException("User not found")
+        val user = repository?.findByUserName(username) ?: throw UsernameNotFoundException("user not found")
 
         val userAuths = userAuthRepository!!.findAllByUserId(user.userId)
 

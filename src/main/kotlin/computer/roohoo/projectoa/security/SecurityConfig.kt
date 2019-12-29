@@ -1,7 +1,7 @@
-package computer.roohoo.projectoa.Security
+package computer.roohoo.projectoa.security
 
-import computer.roohoo.projectoa.User.SiteUsersRepository
-import computer.roohoo.projectoa.User.UserAuthDatabaseDetails
+import computer.roohoo.projectoa.user.SiteUsersRepository
+import computer.roohoo.projectoa.user.UserAuthDatabaseDetails
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean

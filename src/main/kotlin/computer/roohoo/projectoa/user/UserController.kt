@@ -1,4 +1,4 @@
-package computer.roohoo.projectoa.User
+package computer.roohoo.projectoa.user
 
 import org.slf4j.LoggerFactory
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder

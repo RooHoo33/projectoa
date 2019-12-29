@@ -1,0 +1,8 @@
+package computer.roohoo.projectoa.choreChart
+
+import computer.roohoo.projectoa.choreChart.repositorysAndObjects.ChoreChore
+import computer.roohoo.projectoa.choreChart.repositorysAndObjects.ChoreDay
+
+data class ChoresAndDays(var days: MutableList<ChoreDay>, var chores: MutableList<ChoreChore>, var weekNumber: String = ""){
+
+}

@@ -1,4 +1,4 @@
-package computer.roohoo.projectoa.User
+package computer.roohoo.projectoa.user
 
 class CreateSiteUser{
     var user_name: String? = null
