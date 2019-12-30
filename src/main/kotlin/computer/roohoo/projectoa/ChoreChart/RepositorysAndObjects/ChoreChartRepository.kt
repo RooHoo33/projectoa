@@ -4,4 +4,5 @@ import org.springframework.data.repository.CrudRepository
 
 interface ChoreChartRepository : CrudRepository<ChoreChart, String>{
     fun findByActive(active: Boolean): List<ChoreChart>
+    fun findByWeek(week: String): ChoreChart
 }

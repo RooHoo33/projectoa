@@ -1,10 +1,7 @@
-package computer.roohoo.projectoa.choreChart
+package computer.roohoo.projectoa.choreChart.converter
 
-import computer.roohoo.projectoa.choreChart.repositorysAndObjects.ChoreChoreRepository
 import computer.roohoo.projectoa.choreChart.repositorysAndObjects.ChoreDay
 import computer.roohoo.projectoa.choreChart.repositorysAndObjects.ChoreDayRepository
-import computer.roohoo.projectoa.user.SiteUsersRepository
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.convert.converter.Converter
 import org.springframework.stereotype.Component

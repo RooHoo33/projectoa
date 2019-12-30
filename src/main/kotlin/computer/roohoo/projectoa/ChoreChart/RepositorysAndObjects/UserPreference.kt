@@ -22,5 +22,8 @@ data class UserPreference(
         val choreId: Int = 0,
 
         @get: NotNull
-        val preferenceRanking: Int = 0
+        val preferenceRanking: Int = 0,
+
+        @get: NotNull
+        val userId:Int = 0
 )

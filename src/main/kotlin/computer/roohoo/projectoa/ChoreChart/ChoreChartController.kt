@@ -76,22 +76,6 @@ public class ChoreChartController(private val userPreferenceRepository: UserPref
         return list
     }
 
-    fun createChoresListString(day: MutableIterable<ChoreChore>): MutableList<String> {
-        val list = mutableListOf<String>()
-        day.forEach {
-            list.add(it.choreName)
-        }
-        return list
-    }
-
-    fun createDaysAndBoolean(day: Iterable<Any>): MutableList<DayOrChoreAndBoolean> {
-        val list = mutableListOf<DayOrChoreAndBoolean>()
-        day.forEach {
-            list.add(DayOrChoreAndBoolean(it))
-        }
-        return list
-    }
-
     @PostMapping("/create-chore-chart-form/create")
     fun createChoreChartFormPost(choresAndDays: ChoresAndDays, model: Model): String {
 

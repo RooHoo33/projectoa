@@ -11,6 +11,6 @@ class ChoreChartScheduler {
 
     @Scheduled(cron = "0 * * * * ?")
     fun createChoreChart(){
-        logger.debug("We are in the cron job")
+//        logger.debug("We are in the cron job")
     }
 }

@@ -13,4 +13,4 @@ data class ChoreChart(
 
         @NotNull
         val active: Boolean = false
-){}
+)
