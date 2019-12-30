@@ -11,10 +11,11 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 
 @Controller
-//@RequestMapping("/chorechart")
+@RequestMapping("/chorechart")
 public class ChoreChartController(private val userPreferenceRepository: UserPreferenceRepository,
                                   private val choreChartRepository: ChoreChartRepository,
                                   private val choreChoreRepository: ChoreChoreRepository,
@@ -25,7 +26,7 @@ public class ChoreChartController(private val userPreferenceRepository: UserPref
 
     val logger = LoggerFactory.getLogger(this.javaClass.name)!!
 
-    @GetMapping("/chorechart/create-chore-day")
+    @GetMapping("/create-chore-day")
     fun getCreateChoreDay(model: Model): String {
 
         model.addAttribute("choreDay", ChoreDay())
@@ -33,13 +34,13 @@ public class ChoreChartController(private val userPreferenceRepository: UserPref
 
     }
 
-    @PostMapping("/chorechart/create-chore-day")
+    @PostMapping("/create-chore-day")
     fun createChoreDay(choreDay: ChoreDay, model: Model): String {
         choreDayRepository.save(choreDay)
         return "chore-chart/create-chore-day"
     }
 
-    @GetMapping("/chorechart/create-chore-chore")
+    @GetMapping("/create-chore-chore")
     fun getCreateChoreChore(model: Model): String {
 
         model.addAttribute("choreChore", ChoreDay())
@@ -47,13 +48,13 @@ public class ChoreChartController(private val userPreferenceRepository: UserPref
 
     }
 
-    @PostMapping("/chorechart/create-chore-chore")
+    @PostMapping("/create-chore-chore")
     fun createChoreChore(choreChore: ChoreChore, model: Model): String {
         choreChoreRepository.save(choreChore)
         return "chore-chart/create-chore-chore"
     }
 
-    @GetMapping("/chorechart/create-chore-chart-form")
+    @GetMapping("/create-chore-chart-form")
     fun createChoreChartForm(model: Model): String {
         val days = choreDayRepository.findAll()
         val chores = choreChoreRepository.findAll()
@@ -91,7 +92,7 @@ public class ChoreChartController(private val userPreferenceRepository: UserPref
         return list
     }
 
-    @PostMapping("/chorechart/create-chore-chart-form/create")
+    @PostMapping("/create-chore-chart-form/create")
     fun createChoreChartFormPost(choresAndDays: ChoresAndDays, model: Model): String {
 
         val errors = mutableListOf<ErrorMessage>()

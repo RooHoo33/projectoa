@@ -36,14 +36,15 @@
 
     <div class="error">
         <div class="error-text">
-            <strong >Danger! </strong><span th:text="${errorMessage.error}"></span>
+            <strong >Error! </strong><span th:text="${errorMessage.error}"></span>
         </div>
 
     </div>
     <br>
 </th:block>
 </div>
-
+<br>
+<br>
 
 <form th:object="${choresAndDays}" th:action="@{/chorechart/create-chore-chart-form/create}" method="post">
 
@@ -96,6 +97,7 @@
             Select Week
             <input class = "meta meta-week" type="week" th:field="*{weekNumber}"/><br/>
         </div>
+<!--        TODO add a default check mark which will mean the error checking will have to see if week is empty and default == false-->
         <div class="chore-chart-form-item"></div>
         <div class="chore-chart-form-item">
             <br>
