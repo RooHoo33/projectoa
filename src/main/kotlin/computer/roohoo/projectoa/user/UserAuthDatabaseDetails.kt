@@ -8,8 +8,10 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import java.util.*
 
+@Service
 @Component
 class UserAuthDatabaseDetails : UserDetailsService{
     @Autowired
@@ -31,7 +33,6 @@ class UserAuthDatabaseDetails : UserDetailsService{
         userAuths.forEach { it ->
             auths.add(SimpleGrantedAuthority(it.auth_type))
         }
-        val authorities = Arrays.asList(SimpleGrantedAuthority("admin"), SimpleGrantedAuthority("user"))
         logger.debug(user.toString())
         val userSpring = User(user.userName, user.password, auths)
         logger.debug(userSpring.toString())
