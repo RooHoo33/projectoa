@@ -42,6 +42,10 @@ class JwtUtil {
     }
 
     private fun createToken(claims: Map<String, Any>, subject: String): String {
+
+        //use this for 20 second tokens
+//        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(Date(System.currentTimeMillis())).setExpiration(Date(System.currentTimeMillis() + 20000)).signWith(SignatureAlgorithm.HS256, secretKey).compact()
+
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(Date(System.currentTimeMillis())).setExpiration(Date(System.currentTimeMillis() + 100 * 60 * 60 * 10)).signWith(SignatureAlgorithm.HS256, secretKey).compact()
     }
 

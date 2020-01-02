@@ -2,6 +2,7 @@ package computer.roohoo.projectoa.security.filters
 
 import computer.roohoo.projectoa.security.JwtUtil
 import computer.roohoo.projectoa.user.UserAuthDatabaseDetails
+import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
@@ -14,8 +15,15 @@ import javax.servlet.http.HttpServletResponse
 @Component
 class JwtRequestFilter(val userAuthDatabaseDetails: UserAuthDatabaseDetails,
                        val jwtUtil: JwtUtil) : OncePerRequestFilter() {
+
+
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
         val authHeader = request.getHeader("Authorization")
+        val logger = LoggerFactory.getLogger(this::class.java)!!
+
+        logger.debug("Here is the auth token: $authHeader")
+
+
 
         var username: String? = null
         var jwt: String? = null
