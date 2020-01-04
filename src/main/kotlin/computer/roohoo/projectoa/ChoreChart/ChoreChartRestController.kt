@@ -60,7 +60,7 @@ class ChoreChartRestController (private val userPreferenceRepository: UserPrefer
         return choreDayWithUserRepository.findAll()
     }
 
-    @GetMapping("/rest/chorechart/admin/termInformations")
+    @GetMapping("/rest/chorechart/admin/terminformations")
     fun getAllTermInformations(): MutableIterable<TermInformation> {
         return termInformationRepository.findAll()
     }
@@ -68,15 +68,17 @@ class ChoreChartRestController (private val userPreferenceRepository: UserPrefer
     @PostMapping("/rest/chorechart/admin/termInformation")
     fun createTermInformation(@RequestBody termInformation: TermInformation){
 
+        logger.debug("This si the term information: ${termInformation.toString()}")
         val allTermInformations = this.termInformationRepository.findAll().filter { it ->
+            termInformation.id != it.id && (
             (termInformation.termEnd > it.termStart && termInformation.termEnd < it.termEnd )
                     || (termInformation.termStart > it.termStart && termInformation.termStart < it.termEnd)
                     || (termInformation.termStart == it.termStart)
-                    || termInformation.termEnd == it.termEnd
+                    || termInformation.termEnd == it.termEnd)
 
         }
 
-        if (termInformation.termEnd > termInformation.termStart || allTermInformations.size != 0){
+        if (termInformation.termEnd < termInformation.termStart || allTermInformations.isNotEmpty()){
             throw Throwable("Term overlaps a previous term: ${termInformation.toString()}")
 
         }
@@ -91,6 +93,11 @@ class ChoreChartRestController (private val userPreferenceRepository: UserPrefer
     @GetMapping("/rest/chorechart/admin/termInformation/active")
     fun getActiveTermInformation(): TermInformation {
         return this.termInformationRepository.findByActive(true)
+    }
+
+    @GetMapping("/rest/chorechart/admin/termInformation")
+    fun getActiveTermById(@RequestParam id:Int): Optional<TermInformation> {
+        return this.termInformationRepository.findById(id)
     }
 
     @GetMapping("/rest/chorechart/admin/choredays")
