@@ -17,7 +17,7 @@ class ChoresConverter : Converter<String, ChoreChore> {
 
     override fun convert(id: String): ChoreChore? {
 //        logger.debug("This is the Chore id: $id")
-        return choreChoreRepository?.findByChoreChoreId(id.toInt())
+        return choreChoreRepository?.findById(id.toInt())?.get()
     }
 
 }

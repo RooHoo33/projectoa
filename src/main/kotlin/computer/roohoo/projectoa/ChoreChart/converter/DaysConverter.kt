@@ -18,6 +18,6 @@ public class DaysConverter : Converter<String, ChoreDay>{
     override fun convert(id: String): ChoreDay? {
 
 //        logger.debug("This is the Day id: $id")
-        return choreDayRepository?.findByChoreDayId(id.toInt())
+        return choreDayRepository?.findById(id.toInt())?.get()
     }
 }

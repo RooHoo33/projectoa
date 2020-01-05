@@ -2,6 +2,4 @@ package computer.roohoo.projectoa.choreChart.repositorysAndObjects
 
 import org.springframework.data.repository.CrudRepository
 
-interface ChoreChoreRepository : CrudRepository<ChoreChore, Int>{
-    fun findByChoreChoreId(choreId: Int): ChoreChore
-}
+interface ChoreChoreRepository : CrudRepository<ChoreChore, Int>
