@@ -9,8 +9,8 @@ import javax.validation.constraints.NotBlank
 @Entity(name = "chore_day")
 data class ChoreDay(
         @Id @GeneratedValue(strategy = GenerationType.AUTO)
-        val choreDayId: Int = 0,
+        val id: Int = 0,
 
         @NotBlank
-        val day:String = ""
+        val name:String = ""
 )

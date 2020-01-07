@@ -239,7 +239,7 @@ class ChoreChartRestController (private val userPreferenceRepository: UserPrefer
         }
     }
 
-    @GetMapping("/chorechart/admin/choreForms")
+    @GetMapping("/chorechart/admin/choreforms")
     fun getChoreForms(): MutableList<ChoresAndDays> {
 
         val choresAndDaysList = mutableListOf<ChoresAndDays>()
@@ -252,14 +252,14 @@ class ChoreChartRestController (private val userPreferenceRepository: UserPrefer
 
             this.choreAndWeekRepository.findByWeek(it.week).forEach { choreWeek ->
                 logger.debug("Chore Week Getting Form: $choreWeek")
-                choreChores.add(this.choreChoreRepository.findById(choreWeek.id).get())
+                choreChores.add(this.choreChoreRepository.findById(choreWeek.choreId).get())
             }
 
             val choreDays = mutableListOf<ChoreDay>()
 
             this.dayAndWeekRepository.findByWeek(it.week).forEach{ choreDay ->
-
-                    choreDays.add(this.choreDayRepository.findById(choreDay.id).get())
+                logger.debug("choreDay Getting Form: $choreDay")
+                    choreDays.add(this.choreDayRepository.findById(choreDay.dayId).get())
 
 
             }
