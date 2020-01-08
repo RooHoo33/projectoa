@@ -23,5 +23,7 @@ USER root
 #COPY --from=builder build/libs/*.jar .
 COPY build/libs/*.jar .
 
+EXPOSE 8080
+
 ENTRYPOINT ["java"]
 CMD ["-jar", "projectoa-0.0.1-SNAPSHOT.jar"]
