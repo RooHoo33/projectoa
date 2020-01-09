@@ -31,7 +31,7 @@ class SecuirityController(private val authenticationManager: AuthenticationManag
 
     }
 
-    @PostMapping("/authenticate/renew")
+    @PostMapping("/rest/authenticate/renew")
     fun renewAuthToken(@RequestBody authResponse: AuthResponse): AuthResponse {
 
         logger.debug("Old JWT: ${authResponse.jwt}")
