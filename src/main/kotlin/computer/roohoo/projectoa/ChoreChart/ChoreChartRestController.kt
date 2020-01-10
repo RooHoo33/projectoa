@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 import java.util.*
-import kotlin.math.log
 
 @CrossOrigin(origins = arrayOf("http://localhost:3000"), maxAge = 3600)
 @RestController
@@ -25,7 +24,8 @@ class ChoreChartRestController (private val userPreferenceRepository: UserPrefer
                                 private val termInformationRepository: TermInformationRepository,
                                 private val choreAndWeekRepository: ChoreAndWeekRepository,
                                 private val dayAndWeekRepository: DayAndWeekRepository,
-                                private val choreChartWeekRepository: ChoreChartWeekRepository){
+                                private val choreChartWeekRepository: ChoreChartWeekRepository,
+                                private val choreChartService: ChoreChartService){
 
     val logger = LoggerFactory.getLogger(ChoreChartRestController::class.java)!!
 
@@ -33,6 +33,19 @@ class ChoreChartRestController (private val userPreferenceRepository: UserPrefer
     fun getUserPreferences(model: Model): MutableIterable<UserPreference> {
         return userPreferenceRepository.findAll()
     }
+
+    @GetMapping("/chorechart/userprefs")
+    fun getUserChoreChartPrefs(@RequestParam id:Int): List<UserPreference> {
+        return this.userPreferenceRepository.findByUserId(id)
+
+    }
+
+    @PostMapping("/chorechart/userprefs/saveall")
+    fun saveAllUserPrefs(@RequestBody userPrefs: List<UserPreference>) {
+        logger.debug(userPrefs.toString())
+        this.userPreferenceRepository.saveAll(userPrefs)
+    }
+
 
     @GetMapping("/users")
     fun getAllUsers(): MutableIterable<SiteUser> {
@@ -244,32 +257,26 @@ class ChoreChartRestController (private val userPreferenceRepository: UserPrefer
 
         val choresAndDaysList = mutableListOf<ChoresAndDays>()
 
-
         this.choreChartWeekRepository.findAll().forEach{
+            choresAndDaysList.add(this.choreChartService.getChoreChartForm(it.week))
 
-            val choreChores = mutableListOf<ChoreChore>()
-            logger.debug("Chore Chart Week creating forms from: $it")
-
-            this.choreAndWeekRepository.findByWeek(it.week).forEach { choreWeek ->
-                logger.debug("Chore Week Getting Form: $choreWeek")
-                choreChores.add(this.choreChoreRepository.findById(choreWeek.choreId).get())
-            }
-
-            val choreDays = mutableListOf<ChoreDay>()
-
-            this.dayAndWeekRepository.findByWeek(it.week).forEach{ choreDay ->
-                logger.debug("choreDay Getting Form: $choreDay")
-                    choreDays.add(this.choreDayRepository.findById(choreDay.dayId).get())
-
-
-            }
-            choresAndDaysList.add(ChoresAndDays(chores = choreChores,
-                    days = choreDays,
-                    weekNumber = it.week))
         }
         return choresAndDaysList
 
 
+    }
+
+    @GetMapping("/chorechart/admin/choreforms/week")
+    fun getFormByWeek(@RequestParam week:String): ChoresAndDays {
+        return this.choreChartService.getChoreChartForm(week)
+    }
+
+    @GetMapping("/chorechart/admin/createchorechart")
+    fun createChoreChartRest(): MutableList<ChoreDayUser> {
+
+        val asdf = this.choreChartService.createChoreChart()
+        logger.debug(asdf.toString())
+        return asdf
     }
 
 }

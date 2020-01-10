@@ -1,21 +1,24 @@
 package computer.roohoo.projectoa.security
 
+import computer.roohoo.projectoa.user.SiteUser
+import computer.roohoo.projectoa.user.SiteUsersRepository
 import computer.roohoo.projectoa.user.UserAuthDatabaseDetails
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.web.bind.annotation.*
 
 @RestController
-class SecuirityController(private val authenticationManager: AuthenticationManager, private val userAuthDatabaseDetails: UserAuthDatabaseDetails, private val jwtUtil: JwtUtil) {
+class SecuirityController(private val authenticationManager: AuthenticationManager, private val userAuthDatabaseDetails: UserAuthDatabaseDetails, private val jwtUtil: JwtUtil, private val siteUsersRepository: SiteUsersRepository) {
 
     val logger = LoggerFactory.getLogger(this::class.java)!!
 
 
-    @PostMapping("/authenticate")
+    @PostMapping("/rest/authenticate")
     fun createAuthToken(@RequestBody authRequest: AuthRequest): ResponseEntity<Any> {
 
         logger.debug(authRequest.username)
@@ -46,6 +49,19 @@ class SecuirityController(private val authenticationManager: AuthenticationManag
         } else{
             throw Throwable("Bad json token, username: $username, jwt: ${authResponse.jwt}")
         }
+
+    }
+
+    @PostMapping("/rest/security/createuser")
+    fun createSiteUser(@RequestBody siteUser: SiteUser){
+
+        logger.debug("New User: $siteUser")
+
+        val passwordEncoder = BCryptPasswordEncoder()
+        val hashedPassword = passwordEncoder.encode(siteUser.password)
+        siteUser.password = hashedPassword
+
+        this.siteUsersRepository.save(siteUser)
 
     }
 

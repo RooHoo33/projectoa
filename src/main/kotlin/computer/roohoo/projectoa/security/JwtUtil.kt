@@ -1,5 +1,6 @@
 package computer.roohoo.projectoa.security
 
+import computer.roohoo.projectoa.user.SiteUsersRepository
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwt
 import io.jsonwebtoken.Jwts
@@ -11,7 +12,7 @@ import java.util.function.Function
 import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 @Service
-class JwtUtil {
+class JwtUtil(val siteUsersRepository: SiteUsersRepository) {
     val secretKey: String = "secretKey"
 
 
@@ -37,7 +38,8 @@ class JwtUtil {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).body
     }
     fun generateToken(userDetails:UserDetails): String{
-        val claims = mutableMapOf<String, Any>()
+
+        val claims = mutableMapOf("userId" to (siteUsersRepository.findByUserName(userDetails.username)).userId)
         return createToken(claims, userDetails.username)
     }
 

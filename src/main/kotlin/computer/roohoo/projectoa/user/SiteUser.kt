@@ -23,12 +23,15 @@ data class SiteUser(
         val lastName: String = "",
 
         @get: NotNull
-        val kappaSigma: Int = 0,
+        var kappaSigma: Int = 0,
 
         @get: NotNull
         val big: Int = 0,
         @get: NotNull
-        val brother: Boolean = false
+        val brother: Boolean = false,
+
+        @get: NotNull
+        val active: Boolean = true
 
 
 )
