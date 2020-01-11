@@ -12,20 +12,22 @@ import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
+
 @CrossOrigin(origins = arrayOf("http://localhost:3000"), maxAge = 3600)
 @RestController
 @RequestMapping("/rest")
-class ChoreChartRestController (private val userPreferenceRepository: UserPreferenceRepository,
-                                private val choreChartRepository: ChoreChartRepository,
-                                private val choreChoreRepository: ChoreChoreRepository,
-                                private val choreDayRepository: ChoreDayRepository,
-                                private val choreDayWithUserRepository: ChoreDayWithUserRepository,
-                                private val siteUsersRepository: SiteUsersRepository,
-                                private val termInformationRepository: TermInformationRepository,
-                                private val choreAndWeekRepository: ChoreAndWeekRepository,
-                                private val dayAndWeekRepository: DayAndWeekRepository,
-                                private val choreChartWeekRepository: ChoreChartWeekRepository,
-                                private val choreChartService: ChoreChartService){
+class ChoreChartRestController(private val userPreferenceRepository: UserPreferenceRepository,
+                               private val choreChartRepository: ChoreChartRepository,
+                               private val choreChoreRepository: ChoreChoreRepository,
+                               private val choreDayRepository: ChoreDayRepository,
+                               private val choreDayWithUserRepository: ChoreDayWithUserRepository,
+                               private val siteUsersRepository: SiteUsersRepository,
+                               private val termInformationRepository: TermInformationRepository,
+                               private val choreAndWeekRepository: ChoreAndWeekRepository,
+                               private val dayAndWeekRepository: DayAndWeekRepository,
+                               private val choreChartWeekRepository: ChoreChartWeekRepository,
+                               private val choreChartService: ChoreChartService,
+                               private val choreDayUserWithWeekReporistory: ChoreDayUserWithWeekReporistory) {
 
     val logger = LoggerFactory.getLogger(ChoreChartRestController::class.java)!!
 
@@ -35,7 +37,7 @@ class ChoreChartRestController (private val userPreferenceRepository: UserPrefer
     }
 
     @GetMapping("/chorechart/userprefs")
-    fun getUserChoreChartPrefs(@RequestParam id:Int): List<UserPreference> {
+    fun getUserChoreChartPrefs(@RequestParam id: Int): List<UserPreference> {
         return this.userPreferenceRepository.findByUserId(id)
 
     }
@@ -79,19 +81,21 @@ class ChoreChartRestController (private val userPreferenceRepository: UserPrefer
     }
 
     @GetMapping("/chorechart/admin/terminformation/delete")
-    fun getDeleteActiveTermById(@RequestParam id:Int): Optional<TermInformation> {
+    fun getDeleteActiveTermById(@RequestParam id: Int): Optional<TermInformation> {
         this.termInformationRepository.deleteById(id)
 
         return this.termInformationRepository.findById(id)
     }
+
     @GetMapping("/chorechart/admin/chorechore/delete")
-    fun getDeleteChoreChoreById(@RequestParam id:Int): Optional<ChoreChore> {
+    fun getDeleteChoreChoreById(@RequestParam id: Int): Optional<ChoreChore> {
         this.choreChoreRepository.deleteById(id)
 
         return this.choreChoreRepository.findById(id)
     }
+
     @GetMapping("/chorechart/admin/choreday/delete")
-    fun getDeleteChoreDayById(@RequestParam id:Int): Optional<ChoreDay> {
+    fun getDeleteChoreDayById(@RequestParam id: Int): Optional<ChoreDay> {
         this.choreDayRepository.deleteById(id)
 
         return this.choreDayRepository.findById(id)
@@ -110,14 +114,14 @@ class ChoreChartRestController (private val userPreferenceRepository: UserPrefer
         logger.debug("This si the term information: ${termInformation.toString()}")
         val allTermInformations = this.termInformationRepository.findAll().filter { it ->
             termInformation.id != it.id && (
-            (termInformation.termEnd > it.termStart && termInformation.termEnd < it.termEnd )
-                    || (termInformation.termStart > it.termStart && termInformation.termStart < it.termEnd)
-                    || (termInformation.termStart == it.termStart)
-                    || termInformation.termEnd == it.termEnd)
+                    (termInformation.termEnd > it.termStart && termInformation.termEnd < it.termEnd)
+                            || (termInformation.termStart > it.termStart && termInformation.termStart < it.termEnd)
+                            || (termInformation.termStart == it.termStart)
+                            || termInformation.termEnd == it.termEnd)
 
         }
 
-        if (termInformation.termEnd < termInformation.termStart || allTermInformations.isNotEmpty()){
+        if (termInformation.termEnd < termInformation.termStart || allTermInformations.isNotEmpty()) {
             throw Throwable("Term overlaps a previous term: ${termInformation.toString()}")
 
         }
@@ -135,7 +139,7 @@ class ChoreChartRestController (private val userPreferenceRepository: UserPrefer
     }
 
     @GetMapping("/chorechart/admin/termInformation")
-    fun getActiveTermById(@RequestParam id:Int): Optional<TermInformation> {
+    fun getActiveTermById(@RequestParam id: Int): Optional<TermInformation> {
         return this.termInformationRepository.findById(id)
     }
 
@@ -161,8 +165,9 @@ class ChoreChartRestController (private val userPreferenceRepository: UserPrefer
         logger.debug(choreChore.toString())
         return this.choreChoreRepository.save(choreChore)
     }
+
     @DeleteMapping("/chorechart/admin/choreday")
-    fun deleteChoreDay(@RequestParam id: Int){
+    fun deleteChoreDay(@RequestParam id: Int) {
         this.choreDayRepository.deleteById(id)
     }
 
@@ -178,22 +183,22 @@ class ChoreChartRestController (private val userPreferenceRepository: UserPrefer
     }
 
     @DeleteMapping("/chorechart/admin/chorechore")
-    fun deleteChoreChore(@RequestParam id: Int){
+    fun deleteChoreChore(@RequestParam id: Int) {
         this.choreChoreRepository.deleteById(id)
     }
+
     @DeleteMapping("/chorechart/admin/terminformation")
-    fun deleteTermInformation(@RequestParam id: Int){
+    fun deleteTermInformation(@RequestParam id: Int) {
         this.termInformationRepository.deleteById(id)
     }
 
     @PostMapping("/chorechart/admin/choreForms")
-    fun saveChoreChartForm(@RequestBody choresAndDaysList: List<ChoresAndDays>){
-
+    fun saveChoreChartForm(@RequestBody choresAndDaysList: List<ChoresAndDays>) {
 
 
         choresAndDaysList.forEach { choresAndDays ->
 
-            if (this.choreChartWeekRepository.findByWeek(choresAndDays.weekNumber) == null){
+            if (this.choreChartWeekRepository.findByWeek(choresAndDays.weekNumber) == null) {
                 choreChartWeekRepository.save(ChoreChartWeek(week = choresAndDays.weekNumber))
             }
 
@@ -206,7 +211,7 @@ class ChoreChartRestController (private val userPreferenceRepository: UserPrefer
             }
 
             for (it in choresAndDays.chores) {
-                if (it.id == 0){
+                if (it.id == 0) {
                     throw Throwable("This Is A Bad Chore: $it")
                 }
                 val oldChores = choreAndWeekRepository.findByWeekAndChoreId(week = choresAndDays.weekNumber, choreId = it.id)
@@ -231,7 +236,7 @@ class ChoreChartRestController (private val userPreferenceRepository: UserPrefer
             }
 
             for (it in choresAndDays.days) {
-                if (it.id == 0){
+                if (it.id == 0) {
                     throw Throwable("This Is A Bad Day: $it")
                 }
                 val oldDays = dayAndWeekRepository.findByWeekAndAndDayId(week = choresAndDays.weekNumber, dayId = it.id)
@@ -257,7 +262,7 @@ class ChoreChartRestController (private val userPreferenceRepository: UserPrefer
 
         val choresAndDaysList = mutableListOf<ChoresAndDays>()
 
-        this.choreChartWeekRepository.findAll().forEach{
+        this.choreChartWeekRepository.findAll().forEach {
             choresAndDaysList.add(this.choreChartService.getChoreChartForm(it.week))
 
         }
@@ -267,16 +272,66 @@ class ChoreChartRestController (private val userPreferenceRepository: UserPrefer
     }
 
     @GetMapping("/chorechart/admin/choreforms/week")
-    fun getFormByWeek(@RequestParam week:String): ChoresAndDays {
+    fun getFormByWeek(@RequestParam week: String): ChoresAndDays {
         return this.choreChartService.getChoreChartForm(week)
     }
 
-    @GetMapping("/chorechart/admin/createchorechart")
-    fun createChoreChartRest(): MutableList<ChoreDayUser> {
+    @PostMapping("/chorechart/admin/createchorechart")
+    fun createChoreChartRest(@RequestBody weekAndKappaSimgaOrder: WeekAndKappaSimgaOrder){
 
-        val asdf = this.choreChartService.createChoreChart()
+        logger.debug("Week: ${weekAndKappaSimgaOrder.week} and KappaSigmaOrder: ${weekAndKappaSimgaOrder.kappaSigmaOrder}")
+        val asdf = this.choreChartService.createChoreChart(weekAndKappaSimgaOrder.week, weekAndKappaSimgaOrder.kappaSigmaOrder)
         logger.debug(asdf.toString())
-        return asdf
+//        return asdf
+    }
+
+    @GetMapping("/chorechart/admin/getuserstuff")
+    fun getChoreDayUserFromDb() {
+        logger.debug(this.choreDayUserWithWeekReporistory.findAll().toString())
+    }
+
+    @GetMapping("/chorechart/chorechart")
+    fun getChoreChart(): MutableList<ChoreDayUser> {
+
+        val calendar: Calendar = GregorianCalendar()
+        val currentTime = Date()
+        calendar.time = currentTime;
+
+        val currentWeek = calendar.get(Calendar.YEAR).toString() + "-W" + calendar.get(Calendar.WEEK_OF_YEAR).toString().padStart(2,'0')
+
+        val siteUsersMap = mutableMapOf<Int, SiteUser>()
+
+        this.siteUsersRepository.findByActive().forEach{
+            siteUsersMap[it.userId] = it
+        }
+
+        siteUsersMap[0] = SiteUser(firstName = "Nobody")
+
+        val daysMap = mutableMapOf<Int, ChoreDay>()
+
+
+        this.choreDayRepository.findAll().forEach{
+            daysMap[it.id] = it
+        }
+
+        val choresMap = mutableMapOf<Int, ChoreChore>()
+
+        this.choreChoreRepository.findAll().forEach{
+            choresMap[it.id] = it
+        }
+
+        val choreDayUserWithWeeks = this.choreDayUserWithWeekReporistory.findByWeek(currentWeek)
+
+        val choreDayUserToReturn = mutableListOf<ChoreDayUser>()
+
+        choreDayUserWithWeeks?.forEach{
+            if (siteUsersMap[it.userId] != null  && choresMap[it.choreId] != null && daysMap[it.dayId] != null) {
+
+                choreDayUserToReturn.add(ChoreDayUser(siteUser = siteUsersMap[it.userId]!!, choreChore = choresMap[it.choreId]!!, choreDay = daysMap[it.dayId]!!))
+            }
+
+        }
+        return choreDayUserToReturn
     }
 
 }

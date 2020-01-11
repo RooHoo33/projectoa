@@ -21,7 +21,8 @@ class ChoreChartService(private val userPreferenceRepository: UserPreferenceRepo
                         private val termInformationRepository: TermInformationRepository,
                         private val choreAndWeekRepository: ChoreAndWeekRepository,
                         private val dayAndWeekRepository: DayAndWeekRepository,
-                        private val choreChartWeekRepository: ChoreChartWeekRepository) {
+                        private val choreChartWeekRepository: ChoreChartWeekRepository,
+                        private val choreDayUserWithWeekReporistory: ChoreDayUserWithWeekReporistory) {
 
     val logger = LoggerFactory.getLogger(ChoreChartService::class.java)!!
 
@@ -57,7 +58,7 @@ class ChoreChartService(private val userPreferenceRepository: UserPreferenceRepo
         return sortedUserPrefs
     }
 
-    fun createChoreChart(): MutableList<ChoreDayUser> {
+    fun createChoreChart(week:String, kappaSigmaOrder: Boolean): MutableList<ChoreDayUser> {
 
         val activePeople = this.siteUsersRepository.findByActive()
 
@@ -78,65 +79,12 @@ class ChoreChartService(private val userPreferenceRepository: UserPreferenceRepo
         }
 
 
-        val sortedList = list.sortedWith(compareBy({ it.siteUser.kappaSigma }, { it.siteUser.big }))
+        var sortedList = list.sortedWith(compareBy({ it.siteUser.kappaSigma }, { it.siteUser.big }))
+        if (!kappaSigmaOrder){
+            sortedList = sortedList.asReversed()
+        }
 
         val form = this.getChoreChartForm("default")
-
-
-        val choreChartFromMap = mutableMapOf<DayAndUser, MutableList<ChoreAndUser>>()
-
-//        val daysAndChoresList = mutableMapOf<Int, MutableMap<Int, String>>()
-//
-//        form.days.forEach{ day ->
-//            val chores = mutableMapOf<Int, String>()
-//            form.chores.forEach{ chore->
-//                chores[chore.id] = "Nobody"
-//            }
-//            daysAndChoresList[day.id] = chores
-//
-//
-//        }
-//
-//        var looking = true
-//        while (looking){
-//            looking = false
-//
-//            sortedList.forEach users@ { userPrefs ->
-//                var found = false
-//                userPrefs.preferences.forEach userPrefs@{ userPref ->
-//                    if (found){
-//                        return@users
-//                    }
-//                    daysAndChoresList.forEach daysAndChores@ { dayId, chores ->
-//                        if (found){
-//                            return@daysAndChores
-//                        }
-//
-//                        chores.forEach chores@ { choreId, user->
-//
-//                            if (dayId == userPref.day_id && choreId == userPref.choreId && user == "Nobody"){
-//                                if (userPrefs.siteUser.kappaSigma != 99999){
-//                                    daysAndChoresList[dayId]!![choreId] = userPrefs.siteUser.kappaSigma.toString()
-//                                } else{
-//
-//                                    logger.debug(userPrefs.siteUser.firstName + " " + userPrefs.siteUser.lastName)
-//                                    daysAndChoresList[dayId]!![choreId] = userPrefs.siteUser.firstName + " " + userPrefs.siteUser.lastName
-//                                }
-//
-//                                found = true
-//                                return@chores
-//                            }
-//
-//
-//                        }
-//
-//
-//                    }
-//                }
-//
-//            }
-//
-//        }
 
         val completeChoresAndDaysList = mutableListOf<ChoreDayUser>()
 
@@ -185,6 +133,19 @@ class ChoreChartService(private val userPreferenceRepository: UserPreferenceRepo
         logger.debug(completeChoresAndDaysList.toString())
 
         logger.debug("Active User Prefs for default: ${sortedList.toString()}")
+
+        val choreDayUserWithWeekList = mutableListOf<ChoreDayUserWithWeek>()
+
+        completeChoresAndDaysList.forEach{ it ->
+            choreDayUserWithWeekList.add(ChoreDayUserWithWeek(choreId = it.choreChore.id, week = week, dayId = it.choreDay.id, userId = it.siteUser.userId))
+        }
+
+
+
+        this.choreDayUserWithWeekReporistory.deleteAllByWeek(week)
+
+        choreDayUserWithWeekReporistory.saveAll(choreDayUserWithWeekList)
+
         return completeChoresAndDaysList
 
 
@@ -211,6 +172,9 @@ class ChoreChartService(private val userPreferenceRepository: UserPreferenceRepo
                 days = choreDays,
                 weekNumber = week)
     }
+
+
+
 
 
 }

@@ -23,6 +23,7 @@ class SecuirityController(private val authenticationManager: AuthenticationManag
 
         logger.debug(authRequest.username)
         logger.debug(authRequest.password)
+        logger.debug(UsernamePasswordAuthenticationToken(authRequest.username, authRequest.password).toString())
 
         authenticationManager.authenticate(UsernamePasswordAuthenticationToken(authRequest.username, authRequest.password))
 

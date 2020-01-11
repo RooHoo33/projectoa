@@ -5,6 +5,8 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwt
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import org.slf4j.LoggerFactory
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import java.util.*
@@ -14,6 +16,8 @@ import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 @Service
 class JwtUtil(val siteUsersRepository: SiteUsersRepository) {
     val secretKey: String = "secretKey"
+
+    val logger = LoggerFactory.getLogger(this::class.java)!!
 
 
     fun extractUsername(token: String): String {
@@ -39,7 +43,9 @@ class JwtUtil(val siteUsersRepository: SiteUsersRepository) {
     }
     fun generateToken(userDetails:UserDetails): String{
 
-        val claims = mutableMapOf("userId" to (siteUsersRepository.findByUserName(userDetails.username)).userId)
+        logger.debug("Is On Commitee?: ${userDetails.authorities.contains(SimpleGrantedAuthority("ManComChairmen"))}")
+        val claims = mutableMapOf("userId" to (siteUsersRepository.findByUserName(userDetails.username)).userId, "matComChairmen" to userDetails.authorities.contains(SimpleGrantedAuthority("ManComChairmen")))
+
         return createToken(claims, userDetails.username)
     }
 
