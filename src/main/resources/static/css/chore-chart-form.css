@@ -1,0 +1,22 @@
+.chore-chart-form-container {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    margin-left: 20%;
+    margin-right: 20%;
+    text-align: center;
+}
+
+.chore-chart-form-item {
+    /*padding-top: 10%;*/
+    font-size: 3vw;
+    vertical-align: middle;
+    color: #ffaf5f;
+}
+
+.chore-chart-form-option {
+    /*padding-top: 10%;*/
+    font-size: 2.5vw;
+    vertical-align: middle;
+    text-align: left;
+    color: #36c7d0;
+}

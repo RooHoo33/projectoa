@@ -1,0 +1,19 @@
+.error{
+    display: table-cell;
+    background: #f29b9b;
+    color: #f20000;
+    border-radius: 10px;
+    height: 50px;
+    width: 900px;
+    font-size: 20px;
+    vertical-align: middle;
+    margin: auto;
+    -webkit-transform: translateX(90px); /* 10px to left */
+    -moz-transform: translateX(90px); /* 10px to left */
+    -ms-transform: translateX(90px); /* 10px to left */
+    transform: translateX(90px); /* 10px to left */
+}
+.error-text {
+    padding: 20px;
+
+}

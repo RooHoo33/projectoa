@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head>
+    <meta charset="UTF-8">
+    <title>Error</title>
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Project Oa</title>
@@ -12,21 +14,26 @@
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <link rel="stylesheet" th:href="@{/css/error.css}"/>
+
 
 </head>
-
 <body>
-<div th:replace="fragments/header :: header"></div>
+You have Hit an error.
+<br>
+<br>
+<!--/*@thymesVar id="errorMessages" type="kotlin"*/-->
+<div th:if="${errorMessages}">
+<th:block th:each="errorMessage: ${errorMessages}">
 
-<img th:src="@{/images/lettersPurple6.png}" style="width: 60%;margin-left: 20%;">
-<div class="footer">
-    <p>Kappa Sigma Chapter</p>
-    <p>Theta Xi Fraternity</p>
-    <p>2829 Sunset Drive</p>
-    <p>Flint MI, 48503</p>
+    <div class="error">
+        <div class="error-text">
+            <strong >Danger! </strong><span th:text="${errorMessage.error}"></span>
+        </div>
+
+    </div>
+    <br>
+</th:block>
 </div>
-<script src="assets/js/jquery.min.js"></script>
-<script src="assets/bootstrap/js/bootstrap.min.js"></script>
 </body>
-
 </html>

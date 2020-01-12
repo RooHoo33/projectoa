@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"> -->
+    <title>Project Oa</title>
+    <link rel="stylesheet" th:href="@{css/style.css}"/>
+    <!-- <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Bitter:400,700">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cookie">
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- <link rel="stylesheet" href="assets/css/login.css"> -->
+    <link rel="stylesheet" href="assets/css/chore-chart-form.css">
+    <script src="https://kit.fontawesome.com/6efc92238a.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css"/>
+
+
+
+    <!-- <link rel="stylesheet" href="css/style.css"> -->
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <link rel="stylesheet" th:href="@{/css/login.css}"/>
+
+    <link rel="stylesheet" th:href="@{/css/chore-chart-form.css}"/>
+    <link rel="stylesheet" th:href="@{/css/error.css}"/>
+
+
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+
+<div th:if="${errorMessages}">
+<th:block th:each="errorMessage: ${errorMessages}">
+
+    <div class="error">
+        <div class="error-text">
+            <strong >Error! </strong><span th:text="${errorMessage.error}"></span>
+        </div>
+
+    </div>
+    <br>
+</th:block>
+</div>
+<br>
+<br>
+
+<form th:object="${choresAndDays}" th:action="@{/chorechart/create-chore-chart-form/create}" method="post">
+
+    <div class="chore-chart-form-container">
+
+        <div class="chore-chart-form-item">
+            Select Days
+            <br>
+
+            <div class="chore-chart-form-option">
+
+                <tr th:each="day: ${choresAndDays.days}">
+
+
+                    <div class="pretty p-round p-icon p-rotate">
+                        <input type="checkbox"  th:name="${day.day}" th:field="*{days}" th:value="${day.choreDayId}"/>
+                        <div class="state p-success">
+                            <i class="icon fas fa-dharmachakra"></i>
+                            <label><span th:text="${day.day}"></span></label>
+                        </div>
+                    </div>
+
+                </tr>
+            </div>
+
+        </div>
+
+        <div class="chore-chart-form-item">
+            Select Chores
+
+            <div class="chore-chart-form-option">
+                <tr th:each="chore: ${choresAndDays.chores}">
+
+                    <div class="pretty p-round p-icon p-rotate">
+                        <input type="checkbox" th:name="${chore.choreName}" th:field="*{chores}" th:value="${chore.choreChoreId}"/>
+                        <div class="state p-success">
+                            <i class="icon fas fa-dharmachakra"></i>
+                            <label><span th:text="${chore.choreName}"></span></label>
+                        </div>
+                    </div>
+
+                </tr>
+
+            </div>
+
+
+        </div>
+
+        <div class="chore-chart-form-item">
+            Select Week
+            <input class = "meta meta-week" type="week" th:field="*{weekNumber}"/><br/>
+        </div>
+<!--        TODO add a default check mark which will mean the error checking will have to see if week is empty and default == false-->
+        <div class="chore-chart-form-item"></div>
+        <div class="chore-chart-form-item">
+            <br>
+            <br>
+            <button type="submit" class="login-page-button" style="margin: 80px;, alignment: right;, border-right: 30px;"><span>Submit</span></button>
+        </div>
+
+    </div>
+
+
+</form>
+
+</body>
+
+
+
+</html>
