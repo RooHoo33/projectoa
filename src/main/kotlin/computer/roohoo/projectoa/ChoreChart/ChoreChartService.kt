@@ -9,6 +9,7 @@ import computer.roohoo.projectoa.user.SiteUsersRepository
 import org.apache.catalina.User
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import javax.transaction.Transactional
 import kotlin.math.log
 
 @Service
@@ -58,6 +59,7 @@ class ChoreChartService(private val userPreferenceRepository: UserPreferenceRepo
         return sortedUserPrefs
     }
 
+    @Transactional
     fun createChoreChart(week:String, kappaSigmaOrder: Boolean): MutableList<ChoreDayUser> {
 
         val activePeople = this.siteUsersRepository.findByActive()
