@@ -44,7 +44,7 @@ class JwtUtil(val siteUsersRepository: SiteUsersRepository) {
     fun generateToken(userDetails:UserDetails): String{
 
         logger.debug("Is On Commitee?: ${userDetails.authorities.contains(SimpleGrantedAuthority("ManComChairmen"))}")
-        val claims = mutableMapOf("userId" to (siteUsersRepository.findByUserName(userDetails.username)).userId, "matComChairmen" to userDetails.authorities.contains(SimpleGrantedAuthority("ManComChairmen")))
+        val claims = mutableMapOf("userId" to (siteUsersRepository.findByUserName(userDetails.username))!!.userId, "matComChairmen" to userDetails.authorities.contains(SimpleGrantedAuthority("ManComChairmen")))
 
         return createToken(claims, userDetails.username)
     }

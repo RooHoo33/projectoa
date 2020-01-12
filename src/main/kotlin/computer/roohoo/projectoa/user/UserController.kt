@@ -28,7 +28,7 @@ class UserController(private val siteUserRepository: SiteUsersRepository, privat
         logger.warn(siteUserHere.toString())
         siteUserRepository.save(siteUserHere)
         val user = siteUserRepository.findByUserName(siteUser.user_name!!)
-        userAuthRepository.save(UserAuth(userId = user.userId, auth_type = "user"))
+        userAuthRepository.save(UserAuth(userId = user!!.userId, auth_type = "user"))
         return "home"
     }
 

@@ -54,7 +54,11 @@ class SecuirityController(private val authenticationManager: AuthenticationManag
     }
 
     @PostMapping("/rest/security/createuser")
-    fun createSiteUser(@RequestBody siteUser: SiteUser){
+    fun createSiteUser(@RequestBody siteUser: SiteUser): MutableMap<String, Boolean> {
+
+        if (siteUsersRepository.findByUserName(siteUser.userName) != null){
+            return mutableMapOf<String, Boolean>("usernameTaken" to true)
+        }
 
         logger.debug("New User: $siteUser")
 
@@ -63,6 +67,7 @@ class SecuirityController(private val authenticationManager: AuthenticationManag
         siteUser.password = hashedPassword
 
         this.siteUsersRepository.save(siteUser)
+        return mutableMapOf("usernameTaken" to false)
 
     }
 

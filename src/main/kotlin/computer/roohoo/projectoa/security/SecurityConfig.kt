@@ -51,7 +51,7 @@ class SecurityConfig: WebSecurityConfigurerAdapter() {
                 .antMatchers("/images/*").permitAll()
                 .antMatchers("/**/*.js", "/**/*.css").permitAll()
                 .antMatchers("/rest/security/createuser").permitAll()
-                .antMatchers("/rest/**").permitAll()
+//                .antMatchers("/rest/**").permitAll()
                 .antMatchers("/**").authenticated()
                 .and()
                 .formLogin().disable()
