@@ -296,6 +296,7 @@ class ChoreChartRestController(private val userPreferenceRepository: UserPrefere
         val calendar: Calendar = GregorianCalendar()
         val currentTime = Date()
         calendar.time = currentTime;
+        calendar.add(Calendar.DAY_OF_MONTH, 1)
 
         val currentWeek = calendar.get(Calendar.YEAR).toString() + "-W" + calendar.get(Calendar.WEEK_OF_YEAR).toString().padStart(2,'0')
 
@@ -333,5 +334,6 @@ class ChoreChartRestController(private val userPreferenceRepository: UserPrefere
         }
         return choreDayUserToReturn
     }
+
 
 }
