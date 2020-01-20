@@ -31,7 +31,10 @@ data class SiteUser(
         val brother: Boolean = false,
 
         @get: NotNull
-        val active: Boolean = true
+        val active: Boolean = true,
+
+        @get: NotBlank
+        val email:String = ""
 
 
 )

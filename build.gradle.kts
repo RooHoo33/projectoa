@@ -15,6 +15,9 @@ java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
 	mavenCentral()
+
+	maven{setUrl("https://repo.spring.io/libs-release/")}
+
 }
 
 dependencies {
@@ -29,6 +32,8 @@ dependencies {
 	implementation("org.mariadb.jdbc:mariadb-java-client")
 	implementation("io.jsonwebtoken:jjwt:0.9.1")
 	implementation("javax.xml.bind:jaxb-api:2.2.4")
+//	implementation("khttp:khttp:1.0.0")
+	implementation ("com.github.kittinunf.fuel:fuel:2.2.1")
 
 
 

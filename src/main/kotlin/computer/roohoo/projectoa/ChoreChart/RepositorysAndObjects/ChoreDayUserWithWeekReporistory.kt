@@ -6,5 +6,7 @@ import org.springframework.data.repository.CrudRepository
 interface ChoreDayUserWithWeekReporistory : CrudRepository<ChoreDayUserWithWeek, Int> {
     fun findByWeek(week:String): List<ChoreDayUserWithWeek>?
 
+    fun findByWeekAndDayId(week: String, dayId: Int): List<ChoreDayUserWithWeek>
+
     fun deleteAllByWeek(week:String)
 }
