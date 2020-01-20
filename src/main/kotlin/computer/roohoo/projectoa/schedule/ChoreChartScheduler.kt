@@ -31,7 +31,7 @@ class ChoreChartScheduler(private val choreDayUserWithWeekReporistory: ChoreDayU
             6 to "Friday",
             7 to "Saturday")
 
-        @Scheduled(cron = "0 6 * * 1-5")
+        @Scheduled(cron = "0 0 6 * * 1-5")
 //    @Scheduled(cron = "0 * * * * ?")
     fun notifyUsersOfChores() {
 
