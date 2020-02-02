@@ -335,5 +335,10 @@ class ChoreChartRestController(private val userPreferenceRepository: UserPrefere
         return choreDayUserToReturn
     }
 
+    @GetMapping("/chorechart/chore-stats")
+    fun getChoreChartStats(@RequestParam id: Int): MutableMap<String, Int> {
+        return choreChartService.getNumberOfChoresLeft(id)
+    }
+
 
 }

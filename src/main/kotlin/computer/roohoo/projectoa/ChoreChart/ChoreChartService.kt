@@ -1,17 +1,15 @@
 package computer.roohoo.projectoa.choreChart
 
 import computer.roohoo.projectoa.choreChart.repositorysAndObjects.*
-import computer.roohoo.projectoa.choreChart.repositorysAndObjects.Week.ChoreAndWeek
 import computer.roohoo.projectoa.choreChart.repositorysAndObjects.Week.ChoreAndWeekRepository
 import computer.roohoo.projectoa.choreChart.repositorysAndObjects.Week.DayAndWeekRepository
 import computer.roohoo.projectoa.committee.CommitteeRepository
 import computer.roohoo.projectoa.user.SiteUser
 import computer.roohoo.projectoa.user.SiteUsersRepository
-import org.apache.catalina.User
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import javax.transaction.Transactional
-import kotlin.math.log
+import javax.validation.constraints.Null
 
 @Service
 class ChoreChartService(private val userPreferenceRepository: UserPreferenceRepository,
@@ -61,13 +59,47 @@ class ChoreChartService(private val userPreferenceRepository: UserPreferenceRepo
         return sortedUserPrefs
     }
 
+
+    fun getNumberOfChoresLeft(userId: Int): MutableMap<String, Int> {
+        val usersChoreAndDays = this.choreDayUserWithWeekReporistory.findByUserId(userId)
+        val usersCommittees = this.committeeRepository.findByUserId(userId)
+        val currentTerm = this.termInformationRepository.findByActive(true)
+
+        return if (usersCommittees.isNotEmpty() && usersCommittees.any { it.committeeName == "whiteTeam" }) {
+            mutableMapOf("choresCompleted" to usersChoreAndDays.size, "choresTotal" to currentTerm.whiteTeamChoreAmount)
+        } else {
+            mutableMapOf("choresCompleted" to usersChoreAndDays.size, "choresTotal" to currentTerm.brotherChoreAmount)
+        }
+
+    }
+
     @Transactional
     fun createChoreChart(week: String, kappaSigmaOrder: Boolean): MutableList<ChoreDayUser> {
 
+
+        this.choreDayUserWithWeekReporistory.deleteAllByWeek(week)
         val activePeople = this.siteUsersRepository.findByActive()
 
 
         val list = mutableListOf<UserAndPreferences>()
+
+        val choresLeftToDoForEachUser = mutableMapOf<Int, Int>()
+
+        activePeople.forEach { it ->
+            val choreCountInformation = this.getNumberOfChoresLeft(it.userId)
+
+            if (choreCountInformation["choresTotal"] != null && choreCountInformation["choresCompleted"] != null) {
+                choresLeftToDoForEachUser[it.userId] = choreCountInformation["choresTotal"]!! - choreCountInformation["choresCompleted"]!!
+            } else {
+                choresLeftToDoForEachUser[it.userId] = 0
+            }
+
+
+        }
+
+
+
+
 
 
 
@@ -108,28 +140,40 @@ class ChoreChartService(private val userPreferenceRepository: UserPreferenceRepo
 
 
 
-        sortedList.forEach users@{ userPrefs ->
+        val userAndPreferencesFunction = lambda@{ userPrefs: UserAndPreferences ->
 
-            val user = maintenanceCommitteeMembers.filter { committeeMember -> committeeMember.userId == userPrefs.siteUser.userId }
-            if (user.size == 1) {
-                userPrefs.preferences.forEach userPrefs@{ userPref ->
+            userPrefs.preferences.forEach userPrefs@{ userPref ->
 
-                    completeChoresAndDaysList.forEach daysAndChores@{ choreDayUser ->
+                completeChoresAndDaysList.forEach daysAndChores@{ choreDayUser ->
 
 
-                        if (choreDayUser.choreDay.id == userPref.day_id && choreDayUser.choreChore.id == userPref.choreId && choreDayUser.siteUser.userId == 0 && userPref.preferenceRanking != 0) {
-                            choreDayUser.siteUser = userPrefs.siteUser
+                    if (choreDayUser.choreDay.id == userPref.day_id && choreDayUser.choreChore.id == userPref.choreId && choreDayUser.siteUser.userId == 0 && userPref.preferenceRanking != 0) {
+                        choreDayUser.siteUser = userPrefs.siteUser
 
-                            logger.debug(userPrefs.siteUser.firstName + " " + userPrefs.siteUser.lastName)
-                            looking = true
-                            return@users
-                        }
-
-
+                        logger.debug(userPrefs.siteUser.firstName + " " + userPrefs.siteUser.lastName)
+                        choresLeftToDoForEachUser[userPrefs.siteUser.userId] = choresLeftToDoForEachUser[userPrefs.siteUser.userId]!! - 1
+                        logger.debug("UserId: ${userPrefs.siteUser.userId} AmountLeft:  ${choresLeftToDoForEachUser[userPrefs.siteUser.userId]}")
+                        looking = true
+                        return@lambda
                     }
 
 
                 }
+
+            }
+        }
+
+        sortedList.forEach users@{ userPrefs ->
+
+            if (choresLeftToDoForEachUser[userPrefs.siteUser.userId] == 0) {
+                return@users
+            }
+
+            val user = maintenanceCommitteeMembers.filter { committeeMember -> committeeMember.userId == userPrefs.siteUser.userId }
+            if (user.size == 1) {
+
+
+                userAndPreferencesFunction(userPrefs)
 
             }
 
@@ -138,26 +182,14 @@ class ChoreChartService(private val userPreferenceRepository: UserPreferenceRepo
 
         sortedList.forEach users@{ userPrefs ->
 
+            if (choresLeftToDoForEachUser[userPrefs.siteUser.userId] == 0) {
+                return@users
+            }
+
             val user = maintenanceCommitteeMembers.filter { committeeMember -> committeeMember.userId == userPrefs.siteUser.userId }
-            if (user.size == 0) {
-                userPrefs.preferences.forEach userPrefs@{ userPref ->
+            if (user.isEmpty()) {
 
-                    completeChoresAndDaysList.forEach daysAndChores@{ choreDayUser ->
-
-
-                        if (choreDayUser.choreDay.id == userPref.day_id && choreDayUser.choreChore.id == userPref.choreId && choreDayUser.siteUser.userId == 0 && userPref.preferenceRanking != 0) {
-                            choreDayUser.siteUser = userPrefs.siteUser
-
-                            logger.debug(userPrefs.siteUser.firstName + " " + userPrefs.siteUser.lastName)
-                            looking = true
-                            return@users
-                        }
-
-
-                    }
-
-
-                }
+                userAndPreferencesFunction(userPrefs)
 
             }
 
@@ -168,71 +200,38 @@ class ChoreChartService(private val userPreferenceRepository: UserPreferenceRepo
 
         reversedSortedList.forEach users@{ userPrefs ->
 
-                userPrefs.preferences.forEach userPrefs@{ userPref ->
-
-                    completeChoresAndDaysList.forEach daysAndChores@{ choreDayUser ->
-
-
-                        if (choreDayUser.choreDay.id == userPref.day_id && choreDayUser.choreChore.id == userPref.choreId && choreDayUser.siteUser.userId == 0 && userPref.preferenceRanking != 0) {
-                            choreDayUser.siteUser = userPrefs.siteUser
-
-                            logger.debug(userPrefs.siteUser.firstName + " " + userPrefs.siteUser.lastName)
-                            looking = true
-                            return@users
-                        }
-                }
-
+            if (choresLeftToDoForEachUser[userPrefs.siteUser.userId] == 0) {
+                return@users
             }
+
+            userAndPreferencesFunction(userPrefs)
 
 
         }
 
 
         while (looking) {
+
             looking = false
 
             sortedList.forEach users@{ userPrefs ->
-                userPrefs.preferences.forEach userPrefs@{ userPref ->
 
-                    completeChoresAndDaysList.forEach daysAndChores@{ choreDayUser ->
-
-
-                        if (choreDayUser.choreDay.id == userPref.day_id && choreDayUser.choreChore.id == userPref.choreId && choreDayUser.siteUser.userId == 0 && userPref.preferenceRanking != 0) {
-                            choreDayUser.siteUser = userPrefs.siteUser
-
-                            logger.debug(userPrefs.siteUser.firstName + " " + userPrefs.siteUser.lastName)
-                            looking = true
-                            return@users
-                        }
-
-
-                    }
-
-
+                if (choresLeftToDoForEachUser[userPrefs.siteUser.userId] == 0) {
+                    return@users
                 }
+
+                userAndPreferencesFunction(userPrefs)
 
 
             }
 
             reversedSortedList.forEach users@{ userPrefs ->
-                userPrefs.preferences.forEach userPrefs@{ userPref ->
 
-                    completeChoresAndDaysList.forEach daysAndChores@{ choreDayUser ->
-
-
-                        if (choreDayUser.choreDay.id == userPref.day_id && choreDayUser.choreChore.id == userPref.choreId && choreDayUser.siteUser.userId == 0 && userPref.preferenceRanking != 0) {
-                            choreDayUser.siteUser = userPrefs.siteUser
-
-                            logger.debug(userPrefs.siteUser.firstName + " " + userPrefs.siteUser.lastName)
-                            looking = true
-                            return@users
-                        }
-
-
-                    }
-
-
+                if (choresLeftToDoForEachUser[userPrefs.siteUser.userId] == 0) {
+                    return@users
                 }
+
+                userAndPreferencesFunction(userPrefs)
 
 
             }
@@ -254,7 +253,6 @@ class ChoreChartService(private val userPreferenceRepository: UserPreferenceRepo
 
 
 
-        this.choreDayUserWithWeekReporistory.deleteAllByWeek(week)
 
         choreDayUserWithWeekReporistory.saveAll(choreDayUserWithWeekList)
 

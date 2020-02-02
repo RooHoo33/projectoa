@@ -9,4 +9,6 @@ interface ChoreDayUserWithWeekReporistory : CrudRepository<ChoreDayUserWithWeek,
     fun findByWeekAndDayId(week: String, dayId: Int): List<ChoreDayUserWithWeek>
 
     fun deleteAllByWeek(week:String)
+
+    fun findByUserId(userId: Int): List<ChoreDayUserWithWeek>
 }

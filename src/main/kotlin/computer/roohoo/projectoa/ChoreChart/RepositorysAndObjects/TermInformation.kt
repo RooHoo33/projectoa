@@ -24,7 +24,13 @@ data class TermInformation(
         val active: Boolean = false,
 
         @NotNull
-        val population: Int = 0
+        val population: Int = 0,
+
+        @NotNull
+        val brotherChoreAmount: Int = 0,
+
+        @NotNull
+        val whiteTeamChoreAmount: Int = 0
 
 ) {
 }
